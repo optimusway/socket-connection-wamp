@@ -5,9 +5,10 @@ export default {
   entry: './src/index.ts',
 
   output: {
-    file: './index.js',
+    file: 'dist/bundle/ws-connection.js',
     format: 'umd',
-    name: 'lib'
+    name: 'ws-connection',
+    sourcemap: true
   },
 
   plugins: [
