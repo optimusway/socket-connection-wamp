@@ -3,8 +3,8 @@ import autobahn, {
   Session
 } from 'autobahn';
 import WampSession from "./WampSubscriptionList";
-import { WebSocketConnection } from '../connection/Connection';
-import { IWampSubscriptionConfig } from '../connection/Subscription';
+import { WebSocketConnection } from '../Connection';
+import { IWampSubscriptionConfig } from '../Subscription';
 
 class WampConnection extends WebSocketConnection{
 
