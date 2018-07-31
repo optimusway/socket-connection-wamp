@@ -13,6 +13,7 @@ export default {
 
   plugins: [
     typescript({
+      importHelpers: true,
         typescript: require('typescript')
     }),
     uglify()

@@ -1,5 +1,5 @@
 import {ISubscription} from "autobahn";
-import { SubscriptionList } from "../SubscriptionList";
+import { SubscriptionList } from "../connection/SubscriptionList";
 
 class WampSubscriptionList extends SubscriptionList{
   add = (topic: string, subscription: ISubscription) => {

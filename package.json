@@ -7,7 +7,7 @@
     "precommit": "lint-staged",
     "test": "jest",
     "compile": "tsc --emitDeclarationOnly",
-    "build": "rollup -c",
+    "build": "tsc -p . && rollup -c",
     "start": "npm run-script compile && npm run-script build",
     "publish": "yarn build"
   },
