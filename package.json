@@ -9,7 +9,7 @@
     "compile": "tsc --emitDeclarationOnly",
     "build": "rollup -c",
     "start": "npm run-script compile && npm run-script build",
-    "publish": "yarn build && npm publish"
+    "publish": "yarn build"
   },
   "author": "",
   "license": "ISC",
