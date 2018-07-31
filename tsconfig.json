@@ -9,7 +9,7 @@
     "jsx": "react",
     "moduleResolution": "node",
     "declaration": true,
-    "declarationDir": ".",
+    "declarationDir": "dist",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
