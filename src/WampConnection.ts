@@ -5,7 +5,6 @@ import autobahn, {
   Session
 } from "autobahn";
 import { IProxy } from "socket-connection/dist/socket";
-import { IWampSubscriptionConfig } from "./Subscription";
 import { SubscriptionList } from "./SubscriptionList";
 import WampSession from "./WampSubscriptionList";
 
@@ -55,35 +54,37 @@ class WampConnection implements IProxy {
   };
 
   close = () => {
-    this.unsubscribeFromAllTopics();
+    this.unsubscribeFromAll();
     this.connection.close();
   };
 
-  subscribeToTopic = async ({
-    topic,
-    callback
-  }: IWampSubscriptionConfig): Promise<ISubscription> => {
+  subscribe = async (topic: string, callback: any): Promise<ISubscription> => {
     const subscription = await this.session.subscribe(topic, callback);
     this.subscriptionList.add(topic, subscription);
     return subscription;
   };
 
-  unsubscribeFromTopic = async (subscription: ISubscription) => {
-    const topic = subscription.topic;
+  unsubscribe = async (topic: string) => {
     await this.subscriptionList.find(topic)!.unsubscribe();
     this.subscriptionList.remove(topic);
   };
 
-  unsubscribeFromAllTopics = () =>
-    this.subscriptionList.getAll().forEach(this.unsubscribeFromTopic);
+  unsubscribeFromAll = () =>
+    this.subscriptionList
+      .getAll()
+      .forEach(subscription => this.unsubscribe(subscription.topic));
 
-  subscribeToAllTopics = () =>
-    this.subscriptionList.getAll().forEach(subscription =>
-      this.subscribeToTopic({
-        callback: this.subscriptionList.find(subscription.topic)!.handler,
-        topic: subscription.topic
-      })
-    );
+  subscribeToAll = () =>
+    this.subscriptionList
+      .getAll()
+      .forEach(subscription =>
+        this.subscribe(
+          subscription.topic,
+          this.subscriptionList.find(subscription.topic)!.handler
+        )
+      );
+
+  getAllSubscribes = () => this.subscriptionList.getAll();
 }
 
 export default WampConnection;

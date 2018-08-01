@@ -56,6 +56,6 @@
     "testURL": "http://localhost"
   },
   "dependencies": {
-    "socket-connection": "^1.0.0"
+    "socket-connection": "^1.0.1"
   }
 }

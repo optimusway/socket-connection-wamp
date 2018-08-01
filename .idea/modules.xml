@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../subzero-wamp/.idea/subzero-wamp.iml" filepath="$PROJECT_DIR$/../subzero-wamp/.idea/subzero-wamp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ws-connection.iml" filepath="$PROJECT_DIR$/.idea/ws-connection.iml" />
     </modules>
   </component>
 </project>
