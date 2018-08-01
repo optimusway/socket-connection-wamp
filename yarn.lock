@@ -3229,9 +3229,9 @@ snapdragon@^0.8.1:
     source-map-resolve "^0.5.0"
     use "^3.1.0"
 
-socket-connection@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/socket-connection/-/socket-connection-1.0.1.tgz#0bdadfe96d92f9bcb89853d889ea7504da303d98"
+socket-connection@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/socket-connection/-/socket-connection-1.0.2.tgz#ada451b57215493028187fdb33845c2baa16ab0f"
 
 source-map-resolve@^0.5.0:
   version "0.5.2"

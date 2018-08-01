@@ -11,7 +11,7 @@ import WampSession from "./WampSubscriptionList";
 class WampConnection implements IProxy {
   private subscriptionList: SubscriptionList;
   private session: Session;
-  private isConnected: boolean = false;
+  private isAlive: boolean = false;
   private connection: Connection;
   private options: IConnectionOptions;
 
@@ -24,20 +24,20 @@ class WampConnection implements IProxy {
     return new Promise<Session>(resolve => {
       if (this.session) {
         console.info("Connected");
-        this.isConnected = true;
+        this.isAlive = true;
         resolve(this.session);
       }
 
       this.connection = new autobahn.Connection(this.options);
 
       this.connection.onopen = (autobahnConnection: Session) => {
-        this.isConnected = true;
+        this.isAlive = true;
         this.session = autobahnConnection;
         resolve(this.session);
       };
 
       this.connection.onclose = (reason: string, details: any) => {
-        this.isConnected = false;
+        this.isAlive = false;
         if (reason === "details") {
           console.warn("Connection closed");
         } else {
@@ -85,6 +85,7 @@ class WampConnection implements IProxy {
       );
 
   getAllSubscribes = () => this.subscriptionList.getAll();
+  isConnected = () => this.isAlive;
 }
 
 export default WampConnection;

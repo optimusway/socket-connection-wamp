@@ -4,7 +4,6 @@
     "member-access": [true, "no-public"],
     "interface-name": [true, "never-prefix"],
     "jsx-boolean-value": ["never"],
-    "no-console": [false],
-    "noUnusedLocals": false
+    "no-console": [false]
   }
 }
