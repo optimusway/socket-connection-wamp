@@ -1,3 +1,3 @@
-import WampConnection from "./wamp/WampConnection";
+import WampConnection from "./WampConnection";
 
 export default WampConnection;
