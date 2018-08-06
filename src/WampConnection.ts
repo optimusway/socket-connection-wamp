@@ -10,6 +10,7 @@ export interface IWampMessageOptions {
   type: WampMessageType;
   topic?: string;
   callback?: any;
+  id?: number;
 }
 
 export class WampConnection implements IProxy {
@@ -62,13 +63,13 @@ export class WampConnection implements IProxy {
     return this.connection.close();
   };
 
-  send = ({ topic, type, callback }: IWampMessageOptions): Promise<any> => {
+  send = ({ topic, type, callback, id }: IWampMessageOptions): Promise<any> => {
     switch (type) {
       case WampMessageType.Subscribe:
         return this.subscribe(topic!, callback);
 
       case WampMessageType.Unsubscribe:
-        return this.unsubscribe(topic!);
+        return this.unsubscribe(id!, topic!);
 
       case WampMessageType.SubscribeToAll:
         return this.subscribeToAll();
@@ -83,7 +84,7 @@ export class WampConnection implements IProxy {
 
       case WampMessageType.GetSubscription:
         return new Promise(resolve => {
-          resolve(this.getSubscription(topic!));
+          resolve(this.getSubscription(id!));
         });
     }
     return new Promise(this.catchUnknownType);
@@ -93,45 +94,46 @@ export class WampConnection implements IProxy {
 
   private subscribe = async (topic: string, callback: any) => {
     const subscription = await this.session.subscribe(topic, callback);
-    this.subscriptionList.add(topic, subscription);
+    this.subscriptionList.add(subscription.id, subscription);
     return subscription;
   };
 
-  private unsubscribe = async (topic: string) => {
-    const subscription = this.subscriptionList.find(topic);
+  private unsubscribe = async (id: number, topic: string) => {
+    const subscription = this.subscriptionList.find(id);
     if (!subscription) {
       return Promise.reject(`${topic} is not initialized`);
     }
     await subscription!.unsubscribe();
-    this.subscriptionList.remove(topic);
+    this.subscriptionList.remove(id);
     return Promise.resolve();
   };
 
   private unsubscribeFromAll = () => {
-    const unsubPromises: any[] = [];
+    const unsubscriptionPromises: any[] = [];
     this.subscriptionList
       .getAll()
       .forEach(subscription =>
-        unsubPromises.push(this.unsubscribe(subscription.topic))
+        unsubscriptionPromises.push(
+          this.unsubscribe(subscription.id, subscription.topic)
+        )
       );
-    return Promise.all(unsubPromises);
+    return Promise.all(unsubscriptionPromises);
   };
 
   private subscribeToAll = () => {
-    const subPromises: any[] = [];
+    const subscriptionPromises: any[] = [];
     this.subscriptionList
       .getAll()
       .forEach(subscription =>
-        subPromises.push(
+        subscriptionPromises.push(
           this.subscribe(subscription.topic, subscription.handler)
         )
       );
-    return Promise.all(subPromises);
+    return Promise.all(subscriptionPromises);
   };
 
   private getAllSubscriptions = () => this.subscriptionList.getAll();
-  private getSubscription = (topic: string) =>
-    this.subscriptionList.find(topic);
+  private getSubscription = (id: number) => this.subscriptionList.find(id);
 
   private catchUnknownType = () => `You've sent unknown type of message`;
 }
