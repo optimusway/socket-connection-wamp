@@ -1,25 +1,25 @@
 import { ISubscription } from "autobahn";
 
 export interface ISubscriptionList {
-  add: (topic: string, subscription: ISubscription) => void;
-  remove: (topic: string) => void;
-  find: (topic: string) => ISubscription | undefined;
-  getAll: () => Map<string, ISubscription>;
+  add: (key: number, subscription: ISubscription) => void;
+  remove: (key: number) => void;
+  find: (key: number) => ISubscription | undefined;
+  getAll: () => Map<number, ISubscription>;
 }
 
 export class WampSubscriptionList implements ISubscriptionList {
-  private subscriptionList: Map<string, ISubscription> = new Map();
+  private subscriptionList: Map<number, ISubscription> = new Map();
 
-  add = (topic: string, subscription: ISubscription) => {
-    this.subscriptionList.set(topic, subscription);
+  add = (key: number, subscription: ISubscription) => {
+    this.subscriptionList.set(key, subscription);
   };
 
-  remove = (topic: string) => {
-    this.subscriptionList.delete(topic);
+  remove = (key: number) => {
+    this.subscriptionList.delete(key);
   };
 
-  find = (topic: string): ISubscription | undefined =>
-    this.subscriptionList.get(topic);
+  find = (key: number): ISubscription | undefined =>
+    this.subscriptionList.get(key);
 
-  getAll = (): Map<string, ISubscription> => this.subscriptionList;
+  getAll = (): Map<number, ISubscription> => this.subscriptionList;
 }
