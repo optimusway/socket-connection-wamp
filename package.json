@@ -1,6 +1,6 @@
 {
   "name": "socket-connection-wamp",
-  "version": "1.0.8",
+  "version": "1.0.6",
   "description": "",
   "scripts": {
     "precommit": "lint-staged",
