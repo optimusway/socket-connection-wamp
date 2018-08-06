@@ -98,8 +98,13 @@ export class WampConnection implements IProxy {
   };
 
   private unsubscribe = async (topic: string) => {
-    await this.subscriptionList.find(topic)!.unsubscribe();
+    const subscription = this.subscriptionList.find(topic);
+    if (!subscription) {
+      return Promise.reject(`${topic} is not initialized`);
+    }
+    await subscription!.unsubscribe();
     this.subscriptionList.remove(topic);
+    return Promise.resolve();
   };
 
   private unsubscribeFromAll = () => {
