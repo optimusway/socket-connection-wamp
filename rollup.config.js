@@ -1,21 +1,18 @@
-import typescript from 'rollup-plugin-typescript';
+import typescript from 'rollup-plugin-typescript2';
 import {uglify} from 'rollup-plugin-uglify';
 
 export default {
   entry: './src/index.ts',
 
   output: {
-    file: 'dist/bundle/ws-connection.js',
+    file: 'dist/bundle/socket-connection-wamp.js',
     format: 'umd',
-    name: 'ws-connection',
+    name: 'socket-connection-wamp',
     sourcemap: true
   },
 
   plugins: [
-    typescript({
-      importHelpers: true,
-        typescript: require('typescript')
-    }),
+    typescript(),
     uglify()
   ]
 }

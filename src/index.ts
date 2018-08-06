@@ -1,3 +1,4 @@
-import WampConnection from "./WampConnection";
+import { WampMessageType } from "./models/WampMessageType";
+import { IWampMessageOptions, WampConnection } from "./WampConnection";
 
-export default WampConnection;
+export { WampConnection, IWampMessageOptions, WampMessageType };

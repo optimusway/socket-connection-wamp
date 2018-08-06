@@ -1,6 +1,6 @@
 {
   "name": "socket-connection-wamp",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "",
   "scripts": {
     "precommit": "lint-staged",
@@ -8,9 +8,9 @@
     "compile": "tsc --emitDeclarationOnly",
     "build": "tsc -p . && rollup -c",
     "start": "npm run-script compile && npm run-script build",
-    "publish": "yarn build"
+    "publish": "yarn build && npm publish"
   },
-  "main": "./dist/bundle/ws-connection.js",
+  "main": "./dist/bundle/socket-connection-wamp.js",
   "module": "./dist/index.js",
   "jsnext:main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -27,8 +27,9 @@
     "lint-staged": "^7.2.0",
     "prettier": "^1.13.7",
     "rollup": "^0.63.4",
-    "rollup-plugin-typescript": "^0.8.1",
+    "rollup-plugin-typescript2": "^0.16.1",
     "rollup-plugin-uglify": "^4.0.0",
+    "socket-connection": "^1.0.10",
     "ts-jest": "^23.0.1",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.14.0",
@@ -54,8 +55,5 @@
       "json"
     ],
     "testURL": "http://localhost"
-  },
-  "dependencies": {
-    "socket-connection": "^1.0.2"
   }
 }

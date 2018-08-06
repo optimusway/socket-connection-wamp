@@ -1,39 +1,43 @@
-import autobahn, {
-  Connection,
-  IConnectionOptions,
-  ISubscription,
-  Session
-} from "autobahn";
-import { IProxy } from "socket-connection/dist/socket";
-import { SubscriptionList } from "./SubscriptionList";
-import WampSession from "./WampSubscriptionList";
+import autobahn, { Connection, IConnectionOptions, Session } from "autobahn";
+import { IProxy } from "socket-connection";
+import { WampMessageType } from "./models/WampMessageType";
+import {
+  ISubscriptionList,
+  WampSubscriptionList
+} from "./WampSubscriptionList";
 
-class WampConnection implements IProxy {
-  private subscriptionList: SubscriptionList;
+export interface IWampMessageOptions {
+  type: WampMessageType;
+  topic?: string;
+  callback?: any;
+}
+
+export class WampConnection implements IProxy {
+  private subscriptionList: ISubscriptionList;
   private session: Session;
   private isAlive: boolean = false;
   private connection: Connection;
   private options: IConnectionOptions;
 
   constructor(options: IConnectionOptions) {
-    this.subscriptionList = new WampSession();
+    this.subscriptionList = new WampSubscriptionList();
     this.options = options;
   }
 
-  connect = (): Promise<Session> => {
-    return new Promise<Session>(resolve => {
+  connect = () => {
+    return new Promise(resolve => {
       if (this.session) {
-        console.info("Connected");
+        console.info("Already connected");
         this.isAlive = true;
-        resolve(this.session);
+        resolve();
       }
 
       this.connection = new autobahn.Connection(this.options);
 
-      this.connection.onopen = (autobahnConnection: Session) => {
+      this.connection.onopen = (autobahnSession: Session) => {
         this.isAlive = true;
-        this.session = autobahnConnection;
-        resolve(this.session);
+        this.session = autobahnSession;
+        resolve();
       };
 
       this.connection.onclose = (reason: string, details: any) => {
@@ -53,39 +57,76 @@ class WampConnection implements IProxy {
     });
   };
 
-  close = () => {
-    this.unsubscribeFromAll();
-    this.connection.close();
+  close = async () => {
+    await this.unsubscribeFromAll();
+    return this.connection.close();
   };
 
-  subscribe = async (topic: string, callback: any): Promise<ISubscription> => {
+  send = ({ topic, type, callback }: IWampMessageOptions): Promise<any> => {
+    switch (type) {
+      case WampMessageType.Subscribe:
+        return this.subscribe(topic!, callback);
+
+      case WampMessageType.Unsubscribe:
+        return this.unsubscribe(topic!);
+
+      case WampMessageType.SubscribeToAll:
+        return this.subscribeToAll();
+
+      case WampMessageType.UnsubscribeFromAll:
+        return this.unsubscribeFromAll();
+
+      case WampMessageType.GetAllSubscriptions:
+        return new Promise(resolve => {
+          resolve(this.getAllSubscriptions());
+        });
+
+      case WampMessageType.GetSubscription:
+        return new Promise(resolve => {
+          resolve(this.getSubscription(topic!));
+        });
+    }
+    return new Promise(this.catchUnknownType);
+  };
+
+  isConnected = () => this.isAlive;
+
+  private subscribe = async (topic: string, callback: any) => {
     const subscription = await this.session.subscribe(topic, callback);
     this.subscriptionList.add(topic, subscription);
     return subscription;
   };
 
-  unsubscribe = async (topic: string) => {
+  private unsubscribe = async (topic: string) => {
     await this.subscriptionList.find(topic)!.unsubscribe();
     this.subscriptionList.remove(topic);
   };
 
-  unsubscribeFromAll = () =>
-    this.subscriptionList
-      .getAll()
-      .forEach(subscription => this.unsubscribe(subscription.topic));
-
-  subscribeToAll = () =>
+  private unsubscribeFromAll = () => {
+    const unsubPromises: any[] = [];
     this.subscriptionList
       .getAll()
       .forEach(subscription =>
-        this.subscribe(
-          subscription.topic,
-          this.subscriptionList.find(subscription.topic)!.handler
+        unsubPromises.push(this.unsubscribe(subscription.topic))
+      );
+    return Promise.all(unsubPromises);
+  };
+
+  private subscribeToAll = () => {
+    const subPromises: any[] = [];
+    this.subscriptionList
+      .getAll()
+      .forEach(subscription =>
+        subPromises.push(
+          this.subscribe(subscription.topic, subscription.handler)
         )
       );
+    return Promise.all(subPromises);
+  };
 
-  getAllSubscribes = () => this.subscriptionList.getAll();
-  isConnected = () => this.isAlive;
+  private getAllSubscriptions = () => this.subscriptionList.getAll();
+  private getSubscription = (topic: string) =>
+    this.subscriptionList.find(topic);
+
+  private catchUnknownType = () => `You've sent unknown type of message`;
 }
-
-export default WampConnection;
