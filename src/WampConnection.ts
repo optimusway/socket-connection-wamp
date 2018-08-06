@@ -134,8 +134,7 @@ export class WampConnection implements IProxy {
     return Promise.all(subscriptionPromises);
   };
 
-  private getAllSubscriptions = () =>
-    Array.from(this.subscriptionList.getAll());
+  private getAllSubscriptions = () => this.subscriptionList.getAll();
   private getSubscription = (topic: string, callback: any) =>
     this.subscriptionList.find(hashCode(`${topic}${callback.toString()}`));
 
