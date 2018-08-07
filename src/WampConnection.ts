@@ -13,7 +13,7 @@ export interface IWampMessageOptions {
   type: WampMessageType;
   topic?: string;
   callback?: () => void;
-  id: string;
+  id?: string;
 }
 
 export class WampConnection implements IProxy {
@@ -73,7 +73,7 @@ export class WampConnection implements IProxy {
         return this.subscribe(topic!, callback);
 
       case WampMessageType.Unsubscribe:
-        return this.unsubscribe(topic!, id);
+        return this.unsubscribe(topic!, id!);
 
       case WampMessageType.SubscribeToAll:
         return this.subscribeToAll();
@@ -88,7 +88,7 @@ export class WampConnection implements IProxy {
 
       case WampMessageType.GetSubscription:
         return new Promise(resolve => {
-          resolve(this.getSubscription(id));
+          resolve(this.getSubscription(id!));
         });
     }
     return new Promise(this.catchUnknownType);
