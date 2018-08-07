@@ -3232,9 +3232,9 @@ snapdragon@^0.8.1:
     source-map-resolve "^0.5.0"
     use "^3.1.0"
 
-socket-connection@^1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/socket-connection/-/socket-connection-1.0.10.tgz#0dab208885e543ecbf3cfdf4d85ae7c5e334d43f"
+socket-connection@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/socket-connection/-/socket-connection-1.1.1.tgz#955869d59b2c32406c0d9ba836643702d3c8737d"
 
 source-map-resolve@^0.5.0:
   version "0.5.2"
@@ -3618,6 +3618,10 @@ union-value@^1.0.0:
     get-value "^2.0.6"
     is-extendable "^0.1.1"
     set-value "^0.4.3"
+
+uniqid@^5.0.3:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/uniqid/-/uniqid-5.0.3.tgz#917968310edc868d50df6c44f783f32c7d80fac1"
 
 universalify@^0.1.0:
   version "0.1.2"

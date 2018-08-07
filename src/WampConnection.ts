@@ -1,21 +1,24 @@
 import autobahn, { Connection, IConnectionOptions, Session } from "autobahn";
 import { IProxy } from "socket-connection";
 import { WampMessageType } from "./models/WampMessageType";
-import { hashCode } from "./utils/string";
 import {
   ISubscriptionList,
   WampSubscriptionList
 } from "./WampSubscriptionList";
 
+// tslint:disable-next-line:no-var-requires
+const uniqid = require("uniqid");
+
 export interface IWampMessageOptions {
   type: WampMessageType;
   topic?: string;
-  callback?: any;
+  callback?: () => void;
+  id: string;
 }
 
 export class WampConnection implements IProxy {
   private subscriptionList: ISubscriptionList;
-  private session: Session;
+  private session: Session | null;
   private isAlive: boolean = false;
   private connection: Connection;
   private options: IConnectionOptions;
@@ -38,11 +41,13 @@ export class WampConnection implements IProxy {
       this.connection.onopen = (autobahnSession: Session) => {
         this.isAlive = true;
         this.session = autobahnSession;
+        console.info("Connected");
         resolve();
       };
 
       this.connection.onclose = (reason: string, details: any) => {
         this.isAlive = false;
+        this.session = null;
         if (reason === "details") {
           console.warn("Connection closed");
         } else {
@@ -53,7 +58,6 @@ export class WampConnection implements IProxy {
         return true;
       };
 
-      console.info("Connected");
       this.connection.open();
     });
   };
@@ -63,13 +67,13 @@ export class WampConnection implements IProxy {
     return this.connection.close();
   };
 
-  send = ({ topic, type, callback }: IWampMessageOptions): Promise<any> => {
+  send = ({ topic, type, callback, id }: IWampMessageOptions): Promise<any> => {
     switch (type) {
       case WampMessageType.Subscribe:
         return this.subscribe(topic!, callback);
 
       case WampMessageType.Unsubscribe:
-        return this.unsubscribe(topic!, callback);
+        return this.unsubscribe(topic!, id);
 
       case WampMessageType.SubscribeToAll:
         return this.subscribeToAll();
@@ -84,7 +88,7 @@ export class WampConnection implements IProxy {
 
       case WampMessageType.GetSubscription:
         return new Promise(resolve => {
-          resolve(this.getSubscription(topic!, callback));
+          resolve(this.getSubscription(id));
         });
     }
     return new Promise(this.catchUnknownType);
@@ -93,20 +97,19 @@ export class WampConnection implements IProxy {
   isConnected = () => this.isAlive;
 
   private subscribe = async (topic: string, callback: any) => {
-    const subscription = await this.session.subscribe(topic, callback);
-    const key = hashCode(`${topic}${callback.toString()}`);
-    this.subscriptionList.add(key, subscription);
-    return subscription;
+    const subscription = await this.session!.subscribe(topic, callback);
+    const id = uniqid();
+    const subscriptionItem = this.subscriptionList.add(id, subscription, topic);
+    return Promise.resolve(subscriptionItem);
   };
 
-  private unsubscribe = async (topic: string, callback: any) => {
-    const key = hashCode(`${topic}${callback.toString()}`);
-    const subscription = this.subscriptionList.find(key);
-    if (!subscription) {
+  private unsubscribe = async (topic: string, id: string) => {
+    const subscriptionItem = this.subscriptionList.find(id);
+    if (!subscriptionItem) {
       return Promise.reject(`${topic} is not initialized`);
     }
-    await subscription!.unsubscribe();
-    this.subscriptionList.remove(key);
+    await subscriptionItem!.subscription.unsubscribe();
+    this.subscriptionList.remove(id);
     return Promise.resolve();
   };
 
@@ -114,9 +117,9 @@ export class WampConnection implements IProxy {
     const unsubscriptionPromises: any[] = [];
     this.subscriptionList
       .getAll()
-      .forEach(subscription =>
+      .forEach(subscriptionItem =>
         unsubscriptionPromises.push(
-          this.unsubscribe(subscription.topic, subscription.handler)
+          this.unsubscribe(subscriptionItem.topic, subscriptionItem.id)
         )
       );
     return Promise.all(unsubscriptionPromises);
@@ -126,17 +129,19 @@ export class WampConnection implements IProxy {
     const subscriptionPromises: any[] = [];
     this.subscriptionList
       .getAll()
-      .forEach(subscription =>
+      .forEach(subscriptionItem =>
         subscriptionPromises.push(
-          this.subscribe(subscription.topic, subscription.handler)
+          this.subscribe(
+            subscriptionItem.topic,
+            subscriptionItem.subscription.handler
+          )
         )
       );
     return Promise.all(subscriptionPromises);
   };
 
   private getAllSubscriptions = () => this.subscriptionList.getAll();
-  private getSubscription = (topic: string, callback: any) =>
-    this.subscriptionList.find(hashCode(`${topic}${callback.toString()}`));
+  private getSubscription = (id: string) => this.subscriptionList.find(id);
 
   private catchUnknownType = () => `You've sent unknown type of message`;
 }
