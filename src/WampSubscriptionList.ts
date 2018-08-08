@@ -14,7 +14,7 @@ export interface IWampSubscriptionItem {
 }
 
 export class WampSubscriptionList implements ISubscriptionList {
-  private subscriptionList: IWampSubscriptionItem[];
+  private subscriptionList: IWampSubscriptionItem[] = [];
 
   add = (
     id: string,
