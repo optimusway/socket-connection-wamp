@@ -1,14 +1,14 @@
 ## Wamp socket connection
 
-Socket-connection-wamp provides class to create connection by wamp protocol. It implements Proxy interface from https://github.com/sschegolev/socket-connection.
+Subzero-wamp provides class to create connection by wamp protocol. It implements Proxy interface from https://github.com/sschegolev/socket-connection.
 
 ### Installing
-    yarn add socket-connection-wamp
-    npm -i socket-connection-wamp
+    yarn add @lykkex/subzero-wamp
+    npm -i @lykkex/subzero-wamp
 
 ### Usage
 
-    import {WampConnection} from 'socket-connection-wamp';
+    import {WampConnection} from '@lykkex/subzero-wamp';
     import {IConnectionOptions} from 'autobahn';
 
     const options: IConnectionOptions = {};
@@ -17,13 +17,13 @@ Socket-connection-wamp provides class to create connection by wamp protocol. It 
 ### Methods
 
 #### connect
-Create wamp connection using options passed to constructor
+Creates wamp connection using options passed to constructor
 
 #### close
-Close wamp connection
+Closes wamp connection
 
 #### isConnected
-Return boolean whether connection is opened or closed
+Returns boolean whether connection is opened or closed
 
 #### send
 Calls private methods depends on passed type.

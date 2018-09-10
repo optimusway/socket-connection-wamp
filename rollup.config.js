@@ -5,9 +5,9 @@ export default {
   entry: './src/index.ts',
 
   output: {
-    file: 'dist/bundle/socket-connection-wamp.js',
+    file: 'dist/bundle/subzero-wamp.js',
     format: 'umd',
-    name: 'socket-connection-wamp',
+    name: 'subzero-wamp',
     sourcemap: true
   },
 
