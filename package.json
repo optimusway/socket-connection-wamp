@@ -1,6 +1,6 @@
 {
   "name": "@lykkex/subzero-wamp",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "",
   "scripts": {
     "precommit": "lint-staged",
@@ -55,7 +55,7 @@
     "testURL": "http://localhost"
   },
   "dependencies": {
-    "@lykkex/subzero": "^0.0.3",
+    "@lykkex/subzero": "^0.0.4",
     "uniqid": "^5.0.3"
   }
 }

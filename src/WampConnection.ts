@@ -42,6 +42,7 @@ export class WampConnection implements IProxy {
         this.isAlive = true;
         this.session = autobahnSession;
         console.info("Connected");
+        this.onopen();
         resolve();
       };
 
@@ -55,11 +56,19 @@ export class WampConnection implements IProxy {
             `Connection lost, details: [${JSON.stringify(details)}]`
           );
         }
+        this.onclose();
         return true;
       };
 
       this.connection.open();
     });
+  };
+
+  onopen = () => {
+    return;
+  };
+  onclose = () => {
+    return;
   };
 
   close = async () => {
