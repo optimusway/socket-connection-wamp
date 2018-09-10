@@ -1,5 +1,5 @@
+import { IProxy } from "@lykkex/subzero";
 import autobahn, { Connection, IConnectionOptions, Session } from "autobahn";
-import { IProxy } from "socket-connection";
 import { WampMessageType } from "./models/WampMessageType";
 import {
   ISubscriptionList,
