@@ -1,6 +1,6 @@
 {
   "name": "@lykkex/subzero-wamp",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "",
   "scripts": {
     "precommit": "lint-staged",
@@ -28,7 +28,6 @@
     "rollup": "^0.63.4",
     "rollup-plugin-typescript2": "^0.16.1",
     "rollup-plugin-uglify": "^4.0.0",
-    "socket-connection": "^1.1.1",
     "ts-jest": "^23.0.1",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.14.0",
@@ -56,6 +55,7 @@
     "testURL": "http://localhost"
   },
   "dependencies": {
+    "@lykkex/subzero": "^0.0.3",
     "uniqid": "^5.0.3"
   }
 }
