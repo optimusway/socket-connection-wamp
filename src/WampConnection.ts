@@ -1,6 +1,7 @@
 import { IProxy } from "@lykkex/subzero";
 import autobahn, { Connection, IConnectionOptions, Session } from "autobahn";
 import { WampMessageType } from "./models/WampMessageType";
+import { ILogger, Logger, LoggerMock } from "./utils/Logger";
 import {
   ISubscriptionList,
   WampSubscriptionList
@@ -22,16 +23,18 @@ export class WampConnection implements IProxy {
   private isAlive: boolean = false;
   private connection: Connection;
   private options: IConnectionOptions;
+  private logger: ILogger;
 
-  constructor(options: IConnectionOptions) {
+  constructor(options: IConnectionOptions, logger: boolean) {
     this.subscriptionList = new WampSubscriptionList();
     this.options = options;
+    this.logger = logger ? new Logger() : new LoggerMock();
   }
 
   connect = () => {
     return new Promise(resolve => {
       if (this.session) {
-        console.info("Already connected");
+        this.logger.info("Already connected");
         this.isAlive = true;
         resolve();
       }
@@ -41,7 +44,7 @@ export class WampConnection implements IProxy {
       this.connection.onopen = (autobahnSession: Session) => {
         this.isAlive = true;
         this.session = autobahnSession;
-        console.info("Connected");
+        this.logger.info("Connected");
         this.onopen();
         resolve();
       };
@@ -50,9 +53,9 @@ export class WampConnection implements IProxy {
         this.isAlive = false;
         this.session = null;
         if (reason === "details") {
-          console.warn("Connection closed");
+          this.logger.warn("Connection closed");
         } else {
-          console.error(
+          this.logger.error(
             `Connection lost, details: [${JSON.stringify(details)}]`
           );
         }
